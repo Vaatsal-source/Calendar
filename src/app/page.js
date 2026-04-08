@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import HERO_IMAGES from "./images";
+
 const CosmicBackground = dynamic(() => import("./CosmicBackground"), {
   ssr: false,
   loading: () => null,
@@ -131,11 +132,12 @@ export default function Page() {
   };
 
   return (
-    <div className="relative min-h-screen bg-black text-white p-4 overflow-hidden">
+    <div className="relative min-h-screen bg-black text-white p-2 md:p-4 overflow-x-hidden">
       {mounted && <CosmicBackground monthIndex={currentDate.getMonth()} />}
 
+      {/* Cursor Glow - Hidden on small screens as there is no cursor */}
       <div
-        className="pointer-events-none fixed w-40 h-40 rounded-full bg-blue-500/20 blur-3xl -translate-x-1/2 -translate-y-1/2 z-0"
+        className="pointer-events-none fixed w-40 h-40 rounded-full bg-blue-500/20 blur-3xl -translate-x-1/2 -translate-y-1/2 z-0 hidden md:block"
         style={{ left: cursor.x, top: cursor.y }}
       />
 
@@ -148,12 +150,13 @@ export default function Page() {
           WebkitBackdropFilter: cardHovered ? "blur(20px)" : "blur(4px)",
         }}
         transition={{ duration: 0.45, ease: "easeInOut" }}
-        className="relative pt-22 py-7 max-w-7xl mx-auto border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+        className="relative mt-4 md:mt-20 py-4 md:py-7 w-full max-w-7xl mx-auto border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
         style={{ zIndex: 2, boxShadow: "0 0 60px rgba(180,40,0,0.12), 0 0 120px rgba(80,0,120,0.08)" }}
       >
         <div className="flex flex-col md:flex-row">
+          {/* Hero Image Section */}
           <motion.div
-            className="md:w-1/3 h-64 md:h-auto relative overflow-hidden"
+            className="w-full md:w-1/3 h-48 md:h-auto relative overflow-hidden"
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.3 }}
           >
@@ -167,20 +170,21 @@ export default function Page() {
               transition={{ duration: 0.5 }}
             />
             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent flex items-end p-4">
-              <h3 className="text-white text-xl font-semibold tracking-tight">Plan Your Month</h3>
+              <h3 className="text-white text-lg md:text-xl font-semibold tracking-tight">Plan Your Month</h3>
             </div>
           </motion.div>
 
-          <div className="md:w-2/3 p-6 space-y-4 overflow-hidden">
+          {/* Calendar Grid Section */}
+          <div className="w-full md:w-2/3 p-4 md:p-6 space-y-4 overflow-hidden">
             <div className="flex items-center justify-between">
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => changeMonth(-1)}
-                className="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10"
+                className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10"
               >←</motion.button>
 
-              <div className="relative h-9 flex items-center justify-center min-w-50">
+              <div className="relative h-9 flex items-center justify-center min-w-37.5 md:min-w-50">
                 <AnimatePresence mode="popLayout" custom={direction}>
                   <motion.h2
                     key={currentDate.toISOString()}
@@ -189,7 +193,7 @@ export default function Page() {
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    className="absolute text-2xl font-bold tracking-tight text-white"
+                    className="absolute text-xl md:text-2xl font-bold tracking-tight text-white whitespace-nowrap"
                     style={{ textShadow: "0 0 20px rgba(255,120,0,0.6)" }}
                   >
                     {currentDate.toLocaleString("default", { month: "long" })} {currentDate.getFullYear()}
@@ -201,11 +205,11 @@ export default function Page() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => changeMonth(1)}
-                className="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10"
+                className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10"
               >→</motion.button>
             </div>
 
-            <div className="grid grid-cols-7 text-white/40 uppercase tracking-widest text-[10px]">
+            <div className="grid grid-cols-7 text-white/40 uppercase tracking-widest text-[9px] md:text-[10px]">
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
                 <div key={d} className="text-center py-1">{d}</div>
               ))}
@@ -219,7 +223,7 @@ export default function Page() {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                className="grid grid-cols-7 gap-1.5"
+                className="grid grid-cols-7 gap-1 md:gap-1.5"
               >
                 {daysArray.map((day, index) => {
                   if (!day) return <div key={`e-${index}`} />;
@@ -230,7 +234,7 @@ export default function Page() {
                   const holidayKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}-${day}`;
                   const holidayName = customHolidays[holidayKey];
 
-                  let cellClass = "h-11 flex items-center justify-center cursor-pointer text-sm font-medium relative overflow-hidden select-none ";
+                  let cellClass = "h-10 md:h-11 flex items-center justify-center cursor-pointer text-xs md:text-sm font-medium relative overflow-hidden select-none ";
                   if (isStart && isEnd) cellClass += "text-white rounded-xl";
                   else if (isStart) cellClass += "text-white rounded-l-full";
                   else if (isEnd) cellClass += "text-white rounded-r-full";
@@ -278,16 +282,17 @@ export default function Page() {
           </div>
         </div>
 
+        {/* Note Area Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="border-t border-white/10 p-4"
           style={{ background: "rgba(10, 3, 18, 0.3)" }}
         >
-          <p className="text-xs text-white/40 mb-2 uppercase tracking-widest">Pen Your Thoughts</p>
+          <p className="text-[10px] md:text-xs text-white/40 mb-2 uppercase tracking-widest">Pen Your Thoughts</p>
           <motion.textarea
-            whileHover={{ y: -4, scale: 1.01 }}
-            whileFocus={{ y: -6, scale: 1.02 }}
+            whileHover={{ y: -2, scale: 1.005 }}
+            whileFocus={{ y: -4, scale: 1.01 }}
             transition={{ type: "spring", stiffness: 200, damping: 15 }}
             value={note}
             onChange={(e) => {
@@ -297,10 +302,12 @@ export default function Page() {
               if (key) setNotesMap((prev) => ({ ...prev, [key]: value }));
             }}
             placeholder="Write something meaningful..."
-            className="w-full h-24 p-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:ring-2 focus:ring-blue-400 focus:shadow-lg focus:shadow-blue-500/20 transition"
+            className="w-full h-20 md:h-24 p-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:ring-2 focus:ring-blue-400/50 focus:shadow-lg focus:shadow-blue-500/20 transition resize-none text-sm"
           />
         </motion.div>
       </motion.div>
+
+      {/* Holiday Modal */}
       <AnimatePresence>
         {isModalOpen && (
           <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
@@ -316,7 +323,7 @@ export default function Page() {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-sm bg-[#0a0312]/80 border border-white/20 p-6 rounded-2xl shadow-2xl backdrop-blur-xl"
+              className="relative w-full max-w-sm bg-[#0a0312]/90 border border-white/20 p-6 rounded-2xl shadow-2xl backdrop-blur-xl"
             >
               <h2 className="text-xl font-bold text-white mb-1">Set Holiday</h2>
               <p className="text-sm text-white/50 mb-6 uppercase tracking-widest">Day {selectedDayForHoliday}</p>
@@ -327,20 +334,20 @@ export default function Page() {
                 value={holidayInput}
                 onChange={(e) => setHolidayInput(e.target.value)}
                 placeholder="Name of the special day..."
-                className="w-full p-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:ring-2 focus:ring-purple-500/50 transition mb-6"
+                className="w-full p-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:ring-2 focus:ring-purple-500/50 transition mb-6 text-sm"
                 onKeyDown={(e) => e.key === "Enter" && saveHoliday()}
               />
               
               <div className="flex gap-3">
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 transition font-medium"
+                  className="flex-1 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 transition font-medium text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={saveHoliday}
-                  className="flex-1 py-2 rounded-lg bg-linear-to-r from-purple-600 to-blue-600 hover:brightness-110 text-white transition font-bold shadow-lg shadow-purple-500/20"
+                  className="flex-1 py-2 rounded-lg bg-linear-to-r from-purple-600 to-blue-600 hover:brightness-110 text-white transition font-bold shadow-lg shadow-purple-500/20 text-sm"
                 >
                   Save Day
                 </button>
